@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Leadership Growth Tracker</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f4f6fa;
+    color: #1a1d2e;
+    min-height: 100vh;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #4B286D 0%, #6B3FA0 60%, #9B59B6 100%);
+    color: white;
+    padding: 24px 32px 0;
+  }
+  .header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .header h1 { font-size: 21px; font-weight: 700; letter-spacing: -0.3px; }
+  .header .subtitle { font-size: 12px; opacity: 0.75; margin-top: 3px; }
+  .header .last-updated {
+    font-size: 11px; opacity: 0.65;
+    background: rgba(255,255,255,0.12);
+    padding: 4px 10px; border-radius: 20px; white-space: nowrap;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin-top: 4px;
+  }
+  .tab-btn {
+    padding: 10px 22px;
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.6);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .tab-btn.active {
+    color: white;
+    border-bottom-color: white;
+  }
+  .tab-btn:hover:not(.active) { color: rgba(255,255,255,0.85); }
+  .tab-badge {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+  }
+  .tab-badge.urgent { background: #e74c3c; }
+
+  .stats-row {
+    display: grid;
+    gap: 14px;
+    padding: 20px 32px 0;
+  }
+  .stats-row.learning-stats { grid-template-columns: repeat(4, 1fr); }
+  .stats-row.action-stats   { grid-template-columns: repeat(4, 1fr); }
+
+  .stat-card {
+    background: white; border-radius: 12px;
+    padding: 16px 18px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    border-top: 3px solid transparent;
+  }
+  .stat-card.purple { border-top-color: #6B3FA0; }
+  .stat-card.red    { border-top-color: #e74c3c; }
+  .stat-card.orange { border-top-color: #e67e22; }
+  .stat-card.green  { border-top-color: #27AE60; }
+  .stat-card.blue   { border-top-color: #2980B9; }
+  .stat-card.gold   { border-top-color: #F39C12; }
+  .stat-card .label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.6px; color: #999; margin-bottom: 5px;
+  }
+  .stat-card .value { font-size: 30px; font-weight: 800; color: #1a1d2e; line-height: 1; }
+  .stat-card .sub { font-size: 10px; color: #bbb; margin-top: 3px; }
+
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 18px;
+    padding: 18px 32px 32px;
+  }
+  .main-grid.full-width { grid-template-columns: 1fr; }
+
+  .card {
+    background: white; border-radius: 12px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  }
+  .card-title {
+    font-size: 13px; font-weight: 700; color: #1a1d2e;
+    margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+  }
+  .card-title .icon {
+    width: 26px; height: 26px; border-radius: 7px;
+    display: flex; align-items: center; justify-content: center; font-size: 13px;
+  }
+  .icon.purple-bg { background: #f0e8ff; }
+  .icon.green-bg  { background: #e8f8ee; }
+  .icon.blue-bg   { background: #e8f3ff; }
+  .icon.red-bg    { background: #fdecea; }
+
+  .table-filters {
+    display: flex; gap: 7px; margin-bottom: 14px;
+    flex-wrap: wrap; align-items: center;
+  }
+  .filter-btn {
+    padding: 4px 11px; border-radius: 20px;
+    border: 1.5px solid #e0e0e0; background: white;
+    font-size: 11px; font-weight: 600; cursor: pointer; color: #666;
+    transition: all 0.15s;
+  }
+  .filter-btn.active { background: #6B3FA0; border-color: #6B3FA0; color: white; }
+  .filter-btn:hover:not(.active) { border-color: #6B3FA0; color: #6B3FA0; }
+  .search-input {
+    padding: 4px 11px; border-radius: 20px;
+    border: 1.5px solid #e0e0e0; font-size: 11px;
+    outline: none; margin-left: auto; width: 160px;
+    transition: border-color 0.15s;
+  }
+  .search-input:focus { border-color: #6B3FA0; }
+
+  table.tracker-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  table.tracker-table th {
+    text-align: left; padding: 7px 9px;
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; color: #aaa; border-bottom: 2px solid #f0f0f0;
+    cursor: pointer; user-select: none; white-space: nowrap;
+  }
+  table.tracker-table th:hover { color: #6B3FA0; }
+  table.tracker-table td { padding: 9px 9px; border-bottom: 1px solid #f5f5f5; vertical-align: middle; }
+  table.tracker-table tr:last-child td { border-bottom: none; }
+  table.tracker-table tr:hover td { background: #faf8ff; }
+
+  .badge {
+    display: inline-block; padding: 2px 7px; border-radius: 9px;
+    font-size: 9.5px; font-weight: 700; letter-spacing: 0.2px; white-space: nowrap;
+  }
+  .badge.must-read    { background: #e8f8ee; color: #1e8449; }
+  .badge.worth-it     { background: #e8f3ff; color: #1a5276; }
+  .badge.skip         { background: #f4f4f4; color: #999; }
+  .badge.deep-dive    { background: #fff3cd; color: #856404; }
+  .badge.action       { background: #fdecea; color: #c0392b; }
+  .badge.deadline     { background: #fff0e0; color: #c0720e; }
+  .badge.register     { background: #eaf4ff; color: #1a6baa; }
+  .badge.fyi          { background: #f3f3f3; color: #666; }
+  .badge.done         { background: #e8f8ee; color: #1e8449; }
+
+  .skill-pill {
+    display: inline-block; padding: 2px 6px; border-radius: 7px;
+    font-size: 9.5px; font-weight: 600; background: #f0e8ff; color: #6B3FA0;
+  }
+  .read-checkbox { width: 15px; height: 15px; cursor: pointer; accent-color: #6B3FA0; }
+  .done-checkbox { width: 15px; height: 15px; cursor: pointer; accent-color: #27AE60; }
+
+  .source-link { color: #6B3FA0; text-decoration: none; font-weight: 500; }
+  .source-link:hover { text-decoration: underline; }
+  .date-cell { color: #aaa; font-size: 10.5px; white-space: nowrap; }
+  .title-cell { font-weight: 500; color: #1a1d2e; max-width: 200px; line-height: 1.35; }
+  .title-cell .sub-text { font-size: 10px; color: #aaa; margin-top: 2px; }
+
+  tr.overdue td { background: #fff8f8 !important; }
+  tr.overdue .date-cell { color: #e74c3c; font-weight: 700; }
+  tr.urgent-deadline td { background: #fffbf0 !important; }
+  tr.urgent-deadline .date-cell { color: #e67e22; font-weight: 700; }
+
+  .action-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .action-table th {
+    text-align: left; padding: 7px 9px;
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; color: #aaa; border-bottom: 2px solid #f0f0f0;
+    white-space: nowrap;
+  }
+  .action-table td { padding: 10px 9px; border-bottom: 1px solid #f5f5f5; vertical-align: top; }
+  .action-table tr:last-child td { border-bottom: none; }
+  .action-table tr:hover td { background: #fafafa; }
+  .action-title { font-weight: 600; color: #1a1d2e; font-size: 12px; line-height: 1.35; }
+  .action-detail { font-size: 10.5px; color: #888; margin-top: 3px; line-height: 1.4; }
+  .deadline-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10px; font-weight: 700;
+    padding: 2px 8px; border-radius: 10px;
+  }
+  .deadline-chip.red    { background: #fdecea; color: #c0392b; }
+  .deadline-chip.orange { background: #fff0e0; color: #c0720e; }
+  .deadline-chip.grey   { background: #f3f3f3; color: #888; }
+
+  .skill-list { list-style: none; }
+  .skill-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 0; border-bottom: 1px solid #f5f5f5; font-size: 11.5px;
+  }
+  .skill-item:last-child { border-bottom: none; }
+  .skill-item .skill-name { color: #444; }
+  .skill-item .skill-bar-wrap {
+    flex: 1; margin: 0 10px; height: 4px;
+    background: #f0f0f0; border-radius: 3px; overflow: hidden;
+  }
+  .skill-item .skill-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #6B3FA0, #9B59B6);
+    border-radius: 3px; transition: width 0.8s ease;
+  }
+  .skill-item .skill-count { font-size: 10px; font-weight: 700; color: #6B3FA0; min-width: 14px; text-align: right; }
+
+  .activity-list { list-style: none; }
+  .activity-item { display: flex; gap: 9px; padding: 7px 0; border-bottom: 1px solid #f5f5f5; font-size: 11.5px; }
+  .activity-item:last-child { border-bottom: none; }
+  .activity-dot { width: 7px; height: 7px; border-radius: 50%; background: #6B3FA0; margin-top: 4px; flex-shrink: 0; }
+  .activity-dot.green { background: #27AE60; }
+  .activity-dot.blue  { background: #2980B9; }
+  .activity-dot.red   { background: #e74c3c; }
+  .activity-text { color: #555; line-height: 1.35; }
+  .activity-date { font-size: 10px; color: #bbb; margin-top: 1px; }
+
+  .chart-container { position: relative; height: 185px; }
+
+  .empty-state { text-align: center; padding: 36px 16px; color: #bbb; }
+  .empty-state .empty-icon { font-size: 32px; margin-bottom: 8px; }
+  .empty-state p { font-size: 12px; }
+
+  .no-data-note { font-size: 11px; color: #ccc; text-align: center; padding: 16px 0 6px; }
+
+  .sort-asc::after  { content: ' ↑'; color: #6B3FA0; }
+  .sort-desc::after { content: ' ↓'; color: #6B3FA0; }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  @media (max-width: 1024px) {
+    .main-grid { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <h1>📈 AI Leadership Growth Tracker</h1>
+      <div class="subtitle">Adewunmi Ajike · AI Product Manager, TELUS</div>
+    </div>
+    <div class="last-updated" id="lastUpdated">Last updated: —</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="actions">
+      🔔 TELUS Actions
+      <span class="tab-badge urgent" id="actionBadge">0</span>
+    </button>
+    <button class="tab-btn" data-tab="learning">
+      📚 Learning Tracker
+      <span class="tab-badge" id="learningBadge">0</span>
+    </button>
+  </div>
+</div>
+
+<div class="panel active" id="panel-actions">
+  <div class="stats-row action-stats">
+    <div class="stat-card red">
+      <div class="label">⚡ Urgent / Deadline</div>
+      <div class="value" id="statUrgent">0</div>
+      <div class="sub">needs immediate attention</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="label">✋ Action Needed</div>
+      <div class="value" id="statAction">0</div>
+      <div class="sub">requires your response</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="label">📋 Register / FYI</div>
+      <div class="value" id="statRegFyi">0</div>
+      <div class="sub">low-urgency items</div>
+    </div>
+    <div class="stat-card green">
+      <div class="label">✅ Done</div>
+      <div class="value" id="statDone">0</div>
+      <div class="sub">resolved this week</div>
+    </div>
+  </div>
+
+  <div class="main-grid full-width" style="padding-top:18px;">
+    <div class="card">
+      <div class="card-title">
+        <span class="icon red-bg">🔔</span>
+        This Week's TELUS Action Items
+      </div>
+      <table class="action-table" id="actionTable">
+        <thead>
+          <tr>
+            <th>Tag</th>
+            <th>Item</th>
+            <th>Deadline</th>
+            <th>Done?</th>
+          </tr>
+        </thead>
+        <tbody id="actionTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="panel-learning">
+  <div class="stats-row learning-stats">
+    <div class="stat-card purple">
+      <div class="label">Total Articles</div>
+      <div class="value" id="statTotal">0</div>
+      <div class="sub">tracked so far</div>
+    </div>
+    <div class="stat-card green">
+      <div class="label">Must Read</div>
+      <div class="value" id="statMustRead">0</div>
+      <div class="sub">high priority</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="label">Worth It</div>
+      <div class="value" id="statWorthIt">0</div>
+      <div class="sub">when you have time</div>
+    </div>
+    <div class="stat-card gold">
+      <div class="label">Read ✓</div>
+      <div class="value" id="statRead">0</div>
+      <div class="sub">completed</div>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div>
+      <div class="card">
+        <div class="card-title">
+          <span class="icon purple-bg">📚</span>
+          Learning Articles
+        </div>
+        <div class="table-filters">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="MUST READ">Must Read</button>
+          <button class="filter-btn" data-filter="WORTH IT">Worth It</button>
+          <button class="filter-btn" data-filter="unread">Unread</button>
+          <input class="search-input" type="text" placeholder="🔍 Search..." id="searchInput">
+        </div>
+        <div id="tableWrapper"></div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="card">
+        <div class="card-title"><span class="icon purple-bg">🧠</span>Skills Covered</div>
+        <ul class="skill-list" id="skillList">
+          <li class="no-data-note">No articles yet</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="icon green-bg">✅</span>Reading Progress</div>
+        <div class="chart-container"><canvas id="progressChart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="icon blue-bg">⚡</span>Recent Activity</div>
+        <ul class="activity-list" id="activityList">
+          <li style="font-size:11px;color:#ccc;padding:7px 0;text-align:center;">No recent activity</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js" integrity="sha384-iU8HYtnGQ8Cy4zl7gbNMOhsDTTKX02BTXptVP/vqAWIaTfM7isw76iyZCsjL2eVi" crossorigin="anonymous"></script>
+<script>
+let DATA = null;
+let readState = {};
+let doneState = {};
+let sortCol = "date", sortDir = -1, filterRating = "all", searchTerm = "";
+
+try { const s = localStorage.getItem("trackerReadState"); if(s) readState = JSON.parse(s); } catch(e){}
+try { const s = localStorage.getItem("trackerDoneState"); if(s) doneState = JSON.parse(s); } catch(e){}
+
+async function loadData() {
+  try {
+    const response = await fetch('data.json?' + Date.now());
+    DATA = await response.json();
+    render();
+  } catch (err) {
+    console.error('Error loading data:', err);
+  }
+}
+
+function render() {
+  if (!DATA) return;
+  document.getElementById('lastUpdated').textContent = `Last updated: ${fmtDate(DATA.lastUpdated)}`;
+  renderActions();
+  renderLearning();
+}
+
+function fmtDate(d) {
+  if (!d) return "—";
+  const [y,m,day] = d.split("-");
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return `${months[parseInt(m)-1]} ${parseInt(day)}`;
+}
+
+function daysUntil(d) {
+  if (!d) return null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const target = new Date(d); target.setHours(0,0,0,0);
+  return Math.ceil((target - today) / 86400000);
+}
+
+function urgencyChip(item) {
+  const du = daysUntil(item.deadline);
+  if (du !== null && du <= 0) return `<span class="deadline-chip red">⚠ Overdue</span>`;
+  if (du !== null && du <= 3) return `<span class="deadline-chip orange">⏰ ${item.deadlineLabel}</span>`;
+  return `<span class="deadline-chip grey">${item.deadlineLabel || "—"}</span>`;
+}
+
+function tagBadge(tag) {
+  const map = {
+    "DEADLINE":      "badge deadline",
+    "ACTION NEEDED": "badge action",
+    "REGISTER":      "badge register",
+    "FYI":           "badge fyi",
+    "DONE":          "badge done"
+  };
+  return `<span class="${map[tag] || 'badge fyi'}">${tag}</span>`;
+}
+
+function ratingBadge(r, dd) {
+  let b = r === "MUST READ" ? `<span class="badge must-read">MUST READ</span>` :
+          r === "WORTH IT"  ? `<span class="badge worth-it">WORTH IT</span>` :
+          `<span class="badge skip">SKIP</span>`;
+  if (dd) b += ` <span class="badge deep-dive">DEEP DIVE</span>`;
+  return b;
+}
+
+function renderActions() {
+  const items = DATA.actionItems || [];
+  let urgent=0, action=0, regFyi=0, done=0;
+  items.forEach(it => {
+    if (doneState[it.id]) { done++; return; }
+    if (it.tag==="DEADLINE") urgent++;
+    else if (it.tag==="ACTION NEEDED") action++;
+    else regFyi++;
+  });
+  document.getElementById("statUrgent").textContent = urgent;
+  document.getElementById("statAction").textContent = action;
+  document.getElementById("statRegFyi").textContent = regFyi;
+  document.getElementById("statDone").textContent = done;
+  document.getElementById("actionBadge").textContent = urgent + action;
+  if (urgent + action > 0) document.getElementById("actionBadge").classList.add("urgent");
+
+  const tbody = document.getElementById("actionTableBody");
+  tbody.innerHTML = "";
+  const sorted = [...items].sort((a,b) => {
+    const order = {"DEADLINE":0,"ACTION NEEDED":1,"REGISTER":2,"FYI":3};
+    return (order[a.tag]||4) - (order[b.tag]||4);
+  });
+  sorted.forEach(it => {
+    const isDone = doneState[it.id] || it.done;
+    const du = daysUntil(it.deadline);
+    const rowClass = du !== null && du < 0 ? "overdue" : du !== null && du <= 3 ? "urgent-deadline" : "";
+    const tr = document.createElement("tr");
+    if (rowClass) tr.className = rowClass;
+    tr.innerHTML = `
+      <td>${tagBadge(isDone ? "DONE" : it.tag)}</td>
+      <td>
+        <div class="action-title" style="${isDone ? 'text-decoration:line-through;opacity:0.5' : ''}">
+          ${it.link ? `<a href="${it.link}" target="_blank" class="source-link">${it.title}</a>` : it.title}
+        </div>
+        <div class="action-detail">${it.detail}</div>
+      </td>
+      <td>${urgencyChip(it)}</td>
+      <td style="text-align:center">
+        <input type="checkbox" class="done-checkbox" ${isDone ? "checked" : ""}
+          onchange="toggleDone('${it.id}', this.checked)">
+      </td>`;
+    tbody.appendChild(tr);
+  });
+  if (!sorted.length) {
+    tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><div class="empty-icon">✅</div><p>No action items this week</p></div></td></tr>`;
+  }
+}
+
+function toggleDone(id, checked) {
+  doneState[id] = checked;
+  try { localStorage.setItem("trackerDoneState", JSON.stringify(doneState)); } catch(e){}
+  renderActions();
+}
+
+function getArticles() {
+  return (DATA.articles || []).map(a => ({...a, read: readState[a.title] !== undefined ? readState[a.title] : a.read}));
+}
+
+function renderLearning() {
+  const all = getArticles();
+  const mustRead = all.filter(a => a.rating === "MUST READ").length;
+  const worthIt  = all.filter(a => a.rating === "WORTH IT").length;
+  const readCnt  = all.filter(a => a.read).length;
+  document.getElementById("statTotal").textContent = all.length;
+  document.getElementById("statMustRead").textContent = mustRead;
+  document.getElementById("statWorthIt").textContent = worthIt;
+  document.getElementById("statRead").textContent = readCnt;
+  document.getElementById("learningBadge").textContent = all.length;
+
+  let filtered = all.filter(a => {
+    const matchRating = filterRating === "all" || a.rating === filterRating ||
+                        (filterRating === "unread" && !a.read);
+    const matchSearch = !searchTerm ||
+      a.title.toLowerCase().includes(searchTerm) ||
+      a.source.toLowerCase().includes(searchTerm) ||
+      a.skillArea.toLowerCase().includes(searchTerm);
+    return matchRating && matchSearch;
+  });
+
+  filtered.sort((a,b) => {
+    let va = a[sortCol] || "", vb = b[sortCol] || "";
+    if (typeof va === "boolean") va = va ? 1 : 0, vb = vb ? 1 : 0;
+    return va < vb ? sortDir : va > vb ? -sortDir : 0;
+  });
+
+  const wrap = document.getElementById("tableWrapper");
+  if (!filtered.length) {
+    wrap.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><p>No articles match your filter</p></div>`;
+  } else {
+    const thSort = (col, label) => {
+      const cls = sortCol === col ? (sortDir === 1 ? "sort-asc" : "sort-desc") : "";
+      return `<th class="${cls}" onclick="setSort('${col}')">${label}</th>`;
+    };
+    wrap.innerHTML = `
+      <table class="tracker-table">
+        <thead><tr>
+          ${thSort("date","Date")}
+          ${thSort("title","Article")}
+          ${thSort("skillArea","Skill Area")}
+          ${thSort("rating","Rating")}
+          <th>Read?</th>
+        </tr></thead>
+        <tbody>
+          ${filtered.map(a => `
+            <tr>
+              <td class="date-cell">${fmtDate(a.date)}</td>
+              <td class="title-cell">
+                ${a.link ? `<a href="${a.link}" target="_blank" class="source-link">${a.title}</a>` : a.title}
+                <div class="sub-text">${a.source}</div>
+              </td>
+              <td><span class="skill-pill">${a.skillArea}</span></td>
+              <td>${ratingBadge(a.rating, a.deepDive)}</td>
+              <td style="text-align:center">
+                <input type="checkbox" class="read-checkbox" ${a.read ? "checked" : ""}
+                  onchange="toggleRead(${JSON.stringify(a.title)}, this.checked)">
+              </td>
+            </tr>`).join("")}
+        </tbody>
+      </table>`;
+  }
+
+  const skillCounts = {};
+  all.forEach(a => { skillCounts[a.skillArea] = (skillCounts[a.skillArea]||0) + 1; });
+  const maxSkill = Math.max(...Object.values(skillCounts), 1);
+  const skillEl = document.getElementById("skillList");
+  if (!Object.keys(skillCounts).length) {
+    skillEl.innerHTML = `<li class="no-data-note">No articles yet</li>`;
+  } else {
+    skillEl.innerHTML = Object.entries(skillCounts)
+      .sort((a,b)=>b[1]-a[1])
+      .map(([k,v]) => `
+        <li class="skill-item">
+          <span class="skill-name">${k}</span>
+          <div class="skill-bar-wrap"><div class="skill-bar" style="width:${Math.round(v/maxSkill*100)}%"></div></div>
+          <span class="skill-count">${v}</span>
+        </li>`).join("");
+  }
+
+  const recent = [...all].sort((a,b) => b.date.localeCompare(a.date)).slice(0,5);
+  const actEl = document.getElementById("activityList");
+  actEl.innerHTML = recent.map(a => `
+    <li class="activity-item">
+      <div class="activity-dot ${a.rating==='MUST READ'?'':'blue'}"></div>
+      <div>
+        <div class="activity-text">${a.title.substring(0,55)}${a.title.length>55?"…":""}</div>
+        <div class="activity-date">${fmtDate(a.date)} · ${a.source}</div>
+      </div>
+    </li>`).join("");
+
+  renderChart();
+}
+
+function toggleRead(title, checked) {
+  readState[title] = checked;
+  try { localStorage.setItem("trackerReadState", JSON.stringify(readState)); } catch(e){}
+  renderLearning();
+}
+
+function setSort(col) {
+  if (sortCol === col) sortDir = -sortDir;
+  else { sortCol = col; sortDir = -1; }
+  renderLearning();
+}
+
+function renderChart() {
+  const all = getArticles();
+  const read = all.filter(a => a.read).length;
+  const unread = all.length - read;
+  const ctx = document.getElementById("progressChart");
+  if (!ctx) return;
+  if (window._progressChart) window._progressChart.destroy();
+  window._progressChart = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: ["Read", "Unread"],
+      datasets: [{ data: [read, unread], backgroundColor: ["#27AE60", "#f0e8ff"], borderWidth: 0 }]
+    },
+    options: {
+      cutout: "70%",
+      plugins: { legend: { position: "bottom", labels: { font: { size: 10 }, boxWidth: 12 } } },
+      maintainAspectRatio: false
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById("panel-" + btn.dataset.tab).classList.add("active");
+    });
+  });
+  document.querySelectorAll(".filter-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      filterRating = btn.dataset.filter;
+      renderLearning();
+    });
+  });
+  document.getElementById("searchInput").addEventListener("input", e => {
+    searchTerm = e.target.value.toLowerCase();
+    renderLearning();
+  });
+  loadData();
+  setInterval(() => { fetch('data.json?' + Date.now()).then(r => r.json()).then(d => { DATA = d; render(); }); }, 5*60*1000);
+});
+</script>
+</body>
+</html>
