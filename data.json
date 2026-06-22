@@ -1,0 +1,66 @@
+{
+  "lastUpdated": "2026-06-22",
+  "articles": [
+    {
+      "title": "Agent Loops for PMs: 20+ You Can Run This Week",
+      "source": "Product Compass (Paweł Huryn)",
+      "skillArea": "PM Excellence",
+      "rating": "MUST READ",
+      "link": "https://huryn.substack.com/p/agent-loops-for-pms",
+      "date": "2026-06-22"
+    },
+    {
+      "title": "Claude Fable 5: The Ultimate Guide for PMs",
+      "source": "Product Compass (Paweł Huryn)",
+      "skillArea": "Technical Fluency",
+      "rating": "MUST READ",
+      "link": "https://huryn.substack.com/p/claude-fable-5-ultimate-guide",
+      "date": "2026-06-19"
+    },
+    {
+      "title": "How Meta Sets Up Super IC Teams",
+      "source": "The Uncommon Executive (Yue Zhao)",
+      "skillArea": "Leadership",
+      "rating": "MUST READ",
+      "link": "https://yuezhao.substack.com/p/meta-super-ic-teams",
+      "date": "2026-06-19"
+    },
+    {
+      "title": "Screw Your Story Points: Roman Estimation and Right-Sizing For the Win",
+      "source": "Maarten Dalmijn's Newsletter",
+      "skillArea": "PM Excellence",
+      "rating": "WORTH IT",
+      "link": "https://mdalmijn.substack.com/p/roman-estimation",
+      "date": "2026-06-19"
+    }
+  ],
+  "snapshots": [
+    {
+      "date": "2026-06-22",
+      "total": 4,
+      "read": 0,
+      "unread": 4,
+      "completionPercent": 0,
+      "mustReadCount": 3,
+      "actionsDone": 2
+    },
+    {
+      "date": "2026-06-21",
+      "total": 3,
+      "read": 1,
+      "unread": 2,
+      "completionPercent": 33,
+      "mustReadCount": 2,
+      "actionsDone": 1
+    },
+    {
+      "date": "2026-06-20",
+      "total": 3,
+      "read": 1,
+      "unread": 2,
+      "completionPercent": 33,
+      "mustReadCount": 2,
+      "actionsDone": 0
+    }
+  ]
+}
