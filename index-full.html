@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Leadership Growth Tracker</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f4f6fa;
+      color: #1a1d2e;
+      min-height: 100vh;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #4B286D 0%, #6B3FA0 60%, #9B59B6 100%);
+      color: white;
+      padding: 24px 32px 0;
+    }
+    .header-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .header h1 { font-size: 21px; font-weight: 700; letter-spacing: -0.3px; }
+    .header .subtitle { font-size: 12px; opacity: 0.75; margin-top: 3px; }
+    .header .last-updated {
+      font-size: 11px; opacity: 0.65;
+      background: rgba(255,255,255,0.12);
+      padding: 4px 10px; border-radius: 20px; white-space: nowrap;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0;
+      margin-top: 4px;
+    }
+    .tab-btn {
+      padding: 10px 22px;
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,0.6);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.15s;
+    }
+    .tab-btn.active {
+      color: white;
+      border-bottom-color: white;
+    }
+    .tab-btn:hover:not(.active) { color: rgba(255,255,255,0.85); }
+
+    .stats-row {
+      display: grid;
+      gap: 14px;
+      padding: 20px 32px 0;
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .stat-card {
+      background: white; border-radius: 12px;
+      padding: 16px 18px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      border-top: 3px solid transparent;
+    }
+    .stat-card.purple { border-top-color: #6B3FA0; }
+    .stat-card.red    { border-top-color: #e74c3c; }
+    .stat-card.orange { border-top-color: #e67e22; }
+    .stat-card.green  { border-top-color: #27AE60; }
+    .stat-card.blue   { border-top-color: #2980B9; }
+    .stat-card.gold   { border-top-color: #F39C12; }
+    .stat-card .label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.6px; color: #999; margin-bottom: 5px;
+    }
+    .stat-card .value { font-size: 30px; font-weight: 800; color: #1a1d2e; line-height: 1; }
+    .stat-card .sub { font-size: 10px; color: #bbb; margin-top: 3px; }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 18px;
+      padding: 18px 32px 32px;
+    }
+    .main-grid.full-width { grid-template-columns: 1fr; }
+
+    .card {
+      background: white; border-radius: 12px;
+      padding: 20px 22px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    .card-title {
+      font-size: 13px; font-weight: 700; color: #1a1d2e;
+      margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+    }
+    .card-title .icon {
+      width: 26px; height: 26px; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center; font-size: 13px;
+    }
+    .icon.purple-bg { background: #f0e8ff; }
+    .icon.green-bg  { background: #e8f8ee; }
+    .icon.blue-bg   { background: #e8f3ff; }
+    .icon.red-bg    { background: #fdecea; }
+
+    .btn-group { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+    .btn {
+      padding: 6px 12px; border-radius: 6px;
+      border: 1.5px solid #e0e0e0; background: white;
+      font-size: 11px; font-weight: 600; cursor: pointer; color: #666;
+      transition: all 0.15s;
+    }
+    .btn:hover { border-color: #6B3FA0; color: #6B3FA0; }
+    .btn.primary { background: #6B3FA0; border-color: #6B3FA0; color: white; }
+
+    table {
+      width: 100%; border-collapse: collapse; font-size: 12px;
+    }
+    th {
+      text-align: left; padding: 7px 9px;
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.5px; color: #aaa; border-bottom: 2px solid #f0f0f0;
+    }
+    td { padding: 9px; border-bottom: 1px solid #f5f5f5; }
+    tr:hover td { background: #faf8ff; }
+
+    .badge {
+      display: inline-block; padding: 2px 7px; border-radius: 9px;
+      font-size: 9.5px; font-weight: 700; white-space: nowrap;
+    }
+    .badge.must-read { background: #e8f8ee; color: #1e8449; }
+    .badge.worth-it { background: #e8f3ff; color: #1a5276; }
+    .badge.deep-dive { background: #fff3cd; color: #856404; }
+    .badge.action { background: #fdecea; color: #c0392b; }
+    .badge.deadline { background: #fff0e0; color: #c0720e; }
+    .badge.register { background: #eaf4ff; color: #1a6baa; }
+    .badge.fyi { background: #f3f3f3; color: #666; }
+
+    .skill-pill {
+      display: inline-block; padding: 2px 6px; border-radius: 7px;
+      font-size: 9.5px; font-weight: 600; background: #f0e8ff; color: #6B3FA0;
+    }
+
+    .snapshot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .snapshot-card {
+      background: #fafbfc;
+      border: 1.5px solid #e8e8e8;
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .snapshot-card:hover {
+      border-color: #6B3FA0;
+      box-shadow: 0 2px 6px rgba(107, 63, 160, 0.12);
+    }
+
+    .snapshot-date { font-size: 10px; font-weight: 700; color: #6B3FA0; margin-bottom: 4px; }
+    .snapshot-stat { font-size: 9px; color: #666; line-height: 1.4; }
+
+    .skill-list { list-style: none; }
+    .skill-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 6px 0; border-bottom: 1px solid #f5f5f5; font-size: 11.5px;
+    }
+    .skill-item .skill-name { color: #444; }
+    .skill-item .skill-bar-wrap {
+      flex: 1; margin: 0 8px; height: 4px;
+      background: #f0f0f0; border-radius: 3px; overflow: hidden;
+    }
+    .skill-item .skill-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #6B3FA0, #9B59B6);
+      border-radius: 3px;
+    }
+    .skill-item .skill-count { font-size: 10px; font-weight: 700; color: #6B3FA0; }
+
+    .activity-list { list-style: none; }
+    .activity-item { display: flex; gap: 8px; padding: 6px 0; border-bottom: 1px solid #f5f5f5; font-size: 11px; }
+    .activity-dot { width: 6px; height: 6px; border-radius: 50%; background: #6B3FA0; margin-top: 3px; flex-shrink: 0; }
+    .activity-text { color: #555; }
+
+    .chart-container { position: relative; height: 200px; margin-top: 12px; }
+
+    .empty-state { text-align: center; padding: 24px; color: #bbb; font-size: 12px; }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    @media (max-width: 1024px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <h1>📈 AI Leadership Growth Tracker</h1>
+      <div class="subtitle">Adewunmi Ajike · AI Product Manager, TELUS</div>
+    </div>
+    <div class="last-updated" id="lastUpdated">Last updated: —</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="learning">📚 Learning Tracker</button>
+    <button class="tab-btn" data-tab="actions">🔔 Action Items</button>
+    <button class="tab-btn" data-tab="history">📊 History & Trends</button>
+  </div>
+</div>
+
+<!-- LEARNING TAB -->
+<div class="panel active" id="panel-learning">
+  <div class="stats-row">
+    <div class="stat-card purple">
+      <div class="label">Total Articles</div>
+      <div class="value" id="statTotal">0</div>
+      <div class="sub">tracked</div>
+    </div>
+    <div class="stat-card green">
+      <div class="label">Read ✓</div>
+      <div class="value" id="statRead">0</div>
+      <div class="sub">completed</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="label">Must Read</div>
+      <div class="value" id="statMustRead">0</div>
+      <div class="sub">high priority</div>
+    </div>
+    <div class="stat-card gold">
+      <div class="label">Completion %</div>
+      <div class="value" id="statPercent">0%</div>
+      <div class="sub">progress</div>
+    </div>
+  </div>
+
+  <div class="main-grid full-width" style="padding-top:18px;">
+    <div class="card">
+      <div class="card-title"><span class="icon purple-bg">📚</span>Learning Articles</div>
+      <div class="btn-group">
+        <button class="btn primary" onclick="saveSnapshot()">💾 Log Today's Progress</button>
+        <button class="btn" onclick="location.reload()">🔄 Refresh</button>
+      </div>
+      <div id="articlesTable"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ACTIONS TAB -->
+<div class="panel" id="panel-actions">
+  <div class="stats-row">
+    <div class="stat-card red">
+      <div class="label">⚡ Urgent</div>
+      <div class="value" id="statUrgent">0</div>
+      <div class="sub">needs attention</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="label">Action Needed</div>
+      <div class="value" id="statAction">0</div>
+      <div class="sub">requires response</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="label">Register/FYI</div>
+      <div class="value" id="statRegFyi">0</div>
+      <div class="sub">low priority</div>
+    </div>
+    <div class="stat-card green">
+      <div class="label">Done ✓</div>
+      <div class="value" id="statDone">0</div>
+      <div class="sub">completed</div>
+    </div>
+  </div>
+
+  <div class="main-grid full-width" style="padding-top:18px;">
+    <div class="card">
+      <div class="card-title"><span class="icon red-bg">🔔</span>This Week's Action Items</div>
+      <div id="actionsTable"></div>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY TAB -->
+<div class="panel" id="panel-history">
+  <div class="stats-row">
+    <div class="stat-card purple">
+      <div class="label">This Week</div>
+      <div class="value" id="statWeekRead">0</div>
+      <div class="sub">articles read</div>
+    </div>
+    <div class="stat-card green">
+      <div class="label">Weekly Avg</div>
+      <div class="value" id="statWeekAvg">0%</div>
+      <div class="sub">completion</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="label">Streak</div>
+      <div class="value" id="statStreak">0</div>
+      <div class="sub">days active</div>
+    </div>
+    <div class="stat-card gold">
+      <div class="label">All Time</div>
+      <div class="value" id="statAllTime">0</div>
+      <div class="sub">total read</div>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div>
+      <div class="card">
+        <div class="card-title"><span class="icon green-bg">✅</span>Daily Snapshots</div>
+        <div class="snapshot-grid" id="snapshotGrid"></div>
+      </div>
+      <div class="card" style="margin-top: 18px;">
+        <div class="card-title"><span class="icon blue-bg">📈</span>Reading Trend (7 Days)</div>
+        <div class="chart-container"><canvas id="trendChart"></canvas></div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="card">
+        <div class="card-title"><span class="icon purple-bg">🧠</span>Skills Covered</div>
+        <ul class="skill-list" id="skillList"></ul>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="icon green-bg">⚡</span>Recent Activity</div>
+        <ul class="activity-list" id="activityList"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js"></script>
+<script>
+let DATA = null;
+let readState = {};
+let doneState = {};
+
+try {
+  const saved = localStorage.getItem("trackerReadState");
+  if (saved) readState = JSON.parse(saved);
+} catch (e) {}
+
+try {
+  const saved = localStorage.getItem("trackerDoneState");
+  if (saved) doneState = JSON.parse(saved);
+} catch (e) {}
+
+async function loadData() {
+  try {
+    const response = await fetch('data.json?' + Date.now());
+    DATA = await response.json();
+    render();
+  } catch (err) {
+    console.error('Error loading data:', err);
+  }
+}
+
+function render() {
+  if (!DATA) return;
+  document.getElementById('lastUpdated').textContent = `Last updated: ${DATA.lastUpdated || 'today'}`;
+  renderLearning();
+  renderActions();
+  renderHistory();
+}
+
+function renderLearning() {
+  const articles = DATA.articles || [];
+  const read = articles.filter(a => readState[a.title]).length;
+  const total = articles.length;
+  const mustRead = articles.filter(a => a.rating === 'MUST READ').length;
+  const percent = total > 0 ? Math.round((read / total) * 100) : 0;
+
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statRead').textContent = read;
+  document.getElementById('statMustRead').textContent = mustRead;
+  document.getElementById('statPercent').textContent = percent + '%';
+
+  const tbody = articles.map(a => `
+    <tr>
+      <td><a href="${a.link}" target="_blank" style="color:#6B3FA0;text-decoration:none;font-weight:500;">${a.title}</a></td>
+      <td><span class="skill-pill">${a.skillArea}</span></td>
+      <td><span class="badge ${a.rating === 'MUST READ' ? 'must-read' : 'worth-it'}">${a.rating}</span></td>
+      <td style="text-align:center;">
+        <input type="checkbox" ${readState[a.title] ? 'checked' : ''}
+          onchange="toggleRead('${a.title}', this.checked)"
+          style="width:16px;height:16px;cursor:pointer;accent-color:#6B3FA0;">
+      </td>
+    </tr>
+  `).join('');
+
+  document.getElementById('articlesTable').innerHTML = `
+    <table><thead><tr><th>Article</th><th>Skill</th><th>Rating</th><th>Read?</th></tr></thead>
+    <tbody>${tbody}</tbody></table>`;
+}
+
+function renderActions() {
+  const items = DATA.actionItems || [];
+  let urgent=0, action=0, regFyi=0, done=0;
+  
+  items.forEach(it => {
+    if (doneState[it.id]) { done++; return; }
+    if (it.tag==="DEADLINE") urgent++;
+    else if (it.tag==="ACTION NEEDED") action++;
+    else regFyi++;
+  });
+
+  document.getElementById('statUrgent').textContent = urgent;
+  document.getElementById('statAction').textContent = action;
+  document.getElementById('statRegFyi').textContent = regFyi;
+  document.getElementById('statDone').textContent = done;
+
+  const sorted = [...items].sort((a,b) => {
+    const order = {"DEADLINE":0,"ACTION NEEDED":1,"REGISTER":2,"FYI":3};
+    return (order[a.tag]||4) - (order[b.tag]||4);
+  });
+
+  const tbody = sorted.map(it => {
+    const isDone = doneState[it.id];
+    return `
+      <tr>
+        <td><span class="badge ${isDone ? 'fyi' : it.tag === 'DEADLINE' ? 'deadline' : it.tag === 'ACTION NEEDED' ? 'action' : 'register'}">${isDone ? 'DONE' : it.tag}</span></td>
+        <td style="${isDone ? 'opacity:0.5;text-decoration:line-through' : ''}">${it.title}</td>
+        <td>${it.deadlineLabel || '—'}</td>
+        <td style="text-align:center;"><input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleDone('${it.id}', this.checked)" style="width:16px;height:16px;cursor:pointer;"></td>
+      </tr>`;
+  }).join('');
+
+  document.getElementById('actionsTable').innerHTML = `
+    <table><thead><tr><th>Tag</th><th>Item</th><th>Deadline</th><th>Done?</th></tr></thead>
+    <tbody>${tbody}</tbody></table>`;
+}
+
+function renderHistory() {
+  const snapshots = DATA.snapshots || [];
+  const articles = DATA.articles || [];
+
+  const weekSnapshots = snapshots.slice(0, 7);
+  const weekRead = weekSnapshots.reduce((sum, s) => sum + s.read, 0);
+  const weekAvg = weekSnapshots.length > 0 ? Math.round(weekSnapshots.reduce((sum, s) => sum + s.completionPercent, 0) / weekSnapshots.length) : 0;
+  const allTimeRead = snapshots.reduce((sum, s) => sum + s.read, 0);
+
+  document.getElementById('statWeekRead').textContent = weekRead;
+  document.getElementById('statWeekAvg').textContent = weekAvg + '%';
+  document.getElementById('statStreak').textContent = snapshots.length;
+  document.getElementById('statAllTime').textContent = allTimeRead;
+
+  document.getElementById('snapshotGrid').innerHTML = snapshots.slice(0, 14).map(s => `
+    <div class="snapshot-card" onclick="alert('📊 ${s.date}\\nRead: ${s.read}/${s.total}\\nProgress: ${s.completionPercent}%')">
+      <div class="snapshot-date">${new Date(s.date).toLocaleDateString('en-US', {month:'short', day:'numeric'})}</div>
+      <div class="snapshot-stat">${s.read}/${s.total}</div>
+      <div class="snapshot-stat">${s.completionPercent}%</div>
+    </div>`).join('');
+
+  // Skills breakdown
+  const skillCounts = {};
+  articles.forEach(a => { skillCounts[a.skillArea] = (skillCounts[a.skillArea]||0) + 1; });
+  const maxSkill = Math.max(...Object.values(skillCounts), 1);
+  document.getElementById('skillList').innerHTML = Object.entries(skillCounts)
+    .sort((a,b)=>b[1]-a[1])
+    .map(([k,v]) => `
+      <li class="skill-item">
+        <span class="skill-name">${k}</span>
+        <div class="skill-bar-wrap"><div class="skill-bar" style="width:${Math.round(v/maxSkill*100)}%"></div></div>
+        <span class="skill-count">${v}</span>
+      </li>`).join('');
+
+  // Recent activity
+  const recent = [...articles].slice(0, 5);
+  document.getElementById('activityList').innerHTML = recent.map(a => `
+    <li class="activity-item">
+      <div class="activity-dot"></div>
+      <div class="activity-text">${a.title.substring(0, 45)}...</div>
+    </li>`).join('');
+
+  // Chart
+  const last7 = snapshots.slice(0, 7).reverse();
+  if (last7.length > 0) renderChart(last7);
+}
+
+function renderChart(data) {
+  const ctx = document.getElementById("trendChart");
+  if (!ctx) return;
+  if (window._chart) window._chart.destroy();
+
+  window._chart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: data.map(s => new Date(s.date).toLocaleDateString('en-US', {month:'short', day:'numeric'})),
+      datasets: [{
+        label: "Articles Read",
+        data: data.map(s => s.read),
+        borderColor: "#27AE60",
+        backgroundColor: "rgba(39, 174, 96, 0.1)",
+        tension: 0.4,
+        fill: true,
+        pointRadius: 4,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { labels: { font: { size: 10 } } } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+}
+
+function toggleRead(title, checked) {
+  readState[title] = checked;
+  try { localStorage.setItem("trackerReadState", JSON.stringify(readState)); } catch (e) {}
+  renderLearning();
+}
+
+function toggleDone(id, checked) {
+  doneState[id] = checked;
+  try { localStorage.setItem("trackerDoneState", JSON.stringify(doneState)); } catch (e) {}
+  renderActions();
+}
+
+function saveSnapshot() {
+  const articles = DATA.articles || [];
+  const read = articles.filter(a => readState[a.title]).length;
+  const today = new Date().toISOString().split('T')[0];
+  alert(`✅ Snapshot logged for ${today}\n${read}/${articles.length} articles read\n\n📌 Share this format with your scheduled task!`);
+}
+
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("panel-" + btn.dataset.tab).classList.add("active");
+  });
+});
+
+loadData();
+setInterval(() => { fetch('data.json?' + Date.now()).then(r => r.json()).then(d => { DATA = d; render(); }); }, 5*60*1000);
+</script>
+</body>
+</html>
