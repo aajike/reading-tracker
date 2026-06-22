@@ -1,0 +1,176 @@
+{
+  "lastUpdated": "2026-06-22",
+  "weeklyGoal": 3,
+  "articles": [
+    {
+      "title": "Agent Loops for PMs: 20+ You Can Run This Week",
+      "source": "Product Compass (Paweł Huryn)",
+      "skillArea": "PM Excellence",
+      "rating": "MUST READ",
+      "link": "https://huryn.substack.com/p/agent-loops-for-pms",
+      "date": "2026-06-22"
+    },
+    {
+      "title": "Claude Fable 5: The Ultimate Guide for PMs",
+      "source": "Product Compass (Paweł Huryn)",
+      "skillArea": "Technical Fluency",
+      "rating": "MUST READ",
+      "link": "https://huryn.substack.com/p/claude-fable-5-ultimate-guide",
+      "date": "2026-06-19"
+    },
+    {
+      "title": "How Meta Sets Up Super IC Teams",
+      "source": "The Uncommon Executive (Yue Zhao)",
+      "skillArea": "Leadership",
+      "rating": "MUST READ",
+      "link": "https://yuezhao.substack.com/p/meta-super-ic-teams",
+      "date": "2026-06-19"
+    },
+    {
+      "title": "Screw Your Story Points: Roman Estimation and Right-Sizing For the Win",
+      "source": "Maarten Dalmijn's Newsletter",
+      "skillArea": "PM Excellence",
+      "rating": "WORTH IT",
+      "link": "https://mdalmijn.substack.com/p/roman-estimation",
+      "date": "2026-06-19"
+    },
+    {
+      "title": "80% of CEOs Say Their Role Is at Risk if AI Doesn't Deliver in 2026",
+      "source": "Dataiku / Harris Poll",
+      "skillArea": "AI Strategy",
+      "rating": "WORTH IT",
+      "link": "https://www.dataiku.com/research/ceo-survey",
+      "date": "2026-06-18"
+    }
+  ],
+  "actionItems": [
+    {
+      "id": "a1",
+      "tag": "DEADLINE",
+      "title": "Complete TELUS Integrity Attestation",
+      "detail": "Annual ethics and conduct attestation for all employees.",
+      "deadline": "2026-06-29",
+      "deadlineLabel": "Due Jun 29 (7 days)",
+      "done": false
+    },
+    {
+      "id": "a2",
+      "tag": "ACTION NEEDED",
+      "title": "Complete TELUS Diversity & Inclusion Survey",
+      "detail": "5-minute self-ID survey for workplace inclusion programs.",
+      "deadline": "",
+      "deadlineLabel": "No deadline",
+      "done": false
+    },
+    {
+      "id": "a3",
+      "tag": "DEADLINE",
+      "title": "Complete TELUS Charter of the French Language Training",
+      "detail": "OVERDUE. Francization compliance training.",
+      "deadline": "2026-05-18",
+      "deadlineLabel": "⚠️ Overdue since May 18",
+      "done": false
+    },
+    {
+      "id": "a4",
+      "tag": "ACTION NEEDED",
+      "title": "Review FFH Refund Fraud AI Initiative Assessment",
+      "detail": "Assessment moved to Risk Response. Review and respond via TELUS ITRM portal.",
+      "deadline": "",
+      "deadlineLabel": "Review ASAP",
+      "done": false
+    },
+    {
+      "id": "a5",
+      "tag": "REGISTER",
+      "title": "Apply: ALL IN 2026 AI Challenge — Smart Cities",
+      "detail": "Canada's largest AI event. Competition for stage time and visibility.",
+      "deadline": "2026-07-03",
+      "deadlineLabel": "Due Jul 3",
+      "done": false
+    },
+    {
+      "id": "a6",
+      "tag": "FYI",
+      "title": "TELUS selected for Canada's sovereign AI infrastructure",
+      "detail": "Strategic partnership with Government of Canada announced.",
+      "deadline": "",
+      "deadlineLabel": "No action required",
+      "done": false
+    }
+  ],
+  "snapshots": [
+    {
+      "date": "2026-06-22",
+      "total": 5,
+      "read": 1,
+      "unread": 4,
+      "completionPercent": 20,
+      "mustReadCount": 3,
+      "actionsDone": 2
+    },
+    {
+      "date": "2026-06-21",
+      "total": 5,
+      "read": 1,
+      "unread": 4,
+      "completionPercent": 20,
+      "mustReadCount": 3,
+      "actionsDone": 1
+    },
+    {
+      "date": "2026-06-20",
+      "total": 4,
+      "read": 1,
+      "unread": 3,
+      "completionPercent": 25,
+      "mustReadCount": 2,
+      "actionsDone": 0
+    },
+    {
+      "date": "2026-06-19",
+      "total": 4,
+      "read": 3,
+      "unread": 1,
+      "completionPercent": 75,
+      "mustReadCount": 2,
+      "actionsDone": 2
+    },
+    {
+      "date": "2026-06-18",
+      "total": 3,
+      "read": 2,
+      "unread": 1,
+      "completionPercent": 67,
+      "mustReadCount": 1,
+      "actionsDone": 1
+    },
+    {
+      "date": "2026-06-17",
+      "total": 3,
+      "read": 0,
+      "unread": 3,
+      "completionPercent": 0,
+      "mustReadCount": 1,
+      "actionsDone": 0
+    },
+    {
+      "date": "2026-06-16",
+      "total": 2,
+      "read": 2,
+      "unread": 0,
+      "completionPercent": 100,
+      "mustReadCount": 1,
+      "actionsDone": 2
+    },
+    {
+      "date": "2026-06-15",
+      "total": 2,
+      "read": 1,
+      "unread": 1,
+      "completionPercent": 50,
+      "mustReadCount": 1,
+      "actionsDone": 1
+    }
+  ]
+}

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Leadership Growth Dashboard</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f4f6fa;
+    color: #1a1d2e;
+    min-height: 100vh;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #4B286D 0%, #6B3FA0 60%, #9B59B6 100%);
+    color: white;
+    padding: 32px;
+  }
+  .header h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+  .header-meta { font-size: 13px; opacity: 0.85; display: flex; gap: 16px; flex-wrap: wrap; }
+
+  .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+
+  .grid-main {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  .stat-big {
+    font-size: 36px;
+    font-weight: 800;
+    color: #6B3FA0;
+    line-height: 1;
+    margin: 12px 0;
+  }
+  .stat-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #999; letter-spacing: 0.5px; }
+  .stat-sub { font-size: 12px; color: #aaa; margin-top: 6px; }
+
+  .progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #f0f0f0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 12px 0;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #6B3FA0, #9B59B6);
+    transition: width 0.3s;
+  }
+
+  .section { margin-bottom: 24px; }
+  .section-title { font-size: 14px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+
+  .priority-item {
+    background: #fafbfc;
+    border: 1.5px solid #e8e8e8;
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .priority-num {
+    font-size: 20px;
+    font-weight: 700;
+    color: #6B3FA0;
+    min-width: 28px;
+    text-align: center;
+  }
+  .priority-content {
+    flex: 1;
+  }
+  .priority-title { font-weight: 600; font-size: 12px; color: #1a1d2e; margin-bottom: 4px; }
+  .priority-meta { font-size: 10px; color: #999; }
+
+  .article-chip {
+    display: inline-block;
+    background: #f0e8ff;
+    color: #6B3FA0;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    margin: 2px;
+  }
+
+  .skill-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #f5f5f5;
+    font-size: 12px;
+  }
+  .skill-name { font-weight: 600; color: #1a1d2e; }
+  .skill-bar-wrap {
+    flex: 1;
+    margin: 0 12px;
+    height: 4px;
+    background: #f0f0f0;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .skill-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #6B3FA0, #9B59B6);
+  }
+  .skill-count { font-weight: 700; color: #6B3FA0; min-width: 24px; text-align: right; }
+
+  .digest-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f5f5f5;
+    font-size: 12px;
+  }
+  .digest-label { color: #666; }
+  .digest-value { font-weight: 700; color: #1a1d2e; }
+  .digest-change { font-size: 10px; color: #27AE60; margin-left: 8px; }
+  .digest-change.down { color: #e74c3c; }
+
+  .chart-container { position: relative; height: 180px; margin-top: 12px; }
+
+  .button-group { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .btn {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1.5px solid #e0e0e0;
+    background: white;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #666;
+    transition: all 0.15s;
+  }
+  .btn:hover { border-color: #6B3FA0; color: #6B3FA0; }
+  .btn.primary { background: #6B3FA0; border-color: #6B3FA0; color: white; }
+
+  .streak-badge {
+    background: linear-gradient(135deg, #27AE60, #1e8449);
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 700;
+  }
+  .streak-number { font-size: 28px; line-height: 1; }
+  .streak-label { font-size: 10px; margin-top: 4px; opacity: 0.9; }
+
+  .deadline-warning {
+    background: #fdecea;
+    border-left: 3px solid #e74c3c;
+    padding: 12px;
+    border-radius: 4px;
+    font-size: 11px;
+    color: #c0392b;
+    margin-top: 12px;
+  }
+
+  .recent-read {
+    padding: 10px 0;
+    border-bottom: 1px solid #f5f5f5;
+    font-size: 12px;
+  }
+  .read-title { font-weight: 500; color: #1a1d2e; margin-bottom: 4px; }
+  .read-meta { font-size: 10px; color: #999; }
+
+  .empty { text-align: center; padding: 24px; color: #ccc; font-size: 12px; }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 600;
+  }
+  .badge.deadline { background: #fff0e0; color: #c0720e; }
+  .badge.action { background: #fdecea; color: #c0392b; }
+  .badge.fyi { background: #f3f3f3; color: #666; }
+
+  @media (max-width: 1024px) {
+    .grid-main { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 640px) {
+    .grid-main { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📈 AI Leadership Growth Dashboard</h1>
+  <div class="header-meta">
+    <span>Adewunmi Ajike · AI Product Manager, TELUS</span>
+    <span id="lastSync">Last synced: —</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- TOP METRICS ROW -->
+  <div class="grid-main">
+    
+    <!-- THIS WEEK PROGRESS -->
+    <div class="card">
+      <div class="stat-label">📊 This Week's Progress</div>
+      <div class="stat-big" id="weekRead">0</div>
+      <div class="stat-sub">articles read</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="weekProgress" style="width: 0%"></div>
+      </div>
+      <div class="stat-sub" id="weekGoal">Goal: 3/week</div>
+    </div>
+
+    <!-- STREAK -->
+    <div class="card">
+      <div class="streak-badge">
+        <div class="streak-number" id="streak">0</div>
+        <div class="streak-label">day streak</div>
+      </div>
+      <div style="font-size: 11px; color: #999; margin-top: 12px; text-align: center;">Keep it going! 🔥</div>
+    </div>
+
+    <!-- COMPLETION RATE -->
+    <div class="card">
+      <div class="stat-label">✅ Overall Completion</div>
+      <div class="stat-big" id="completion">0%</div>
+      <div class="stat-sub">this week</div>
+      <div style="font-size: 10px; color: #999; margin-top: 12px;" id="weekAvg">Avg: 0%</div>
+    </div>
+
+  </div>
+
+  <!-- MAIN CONTENT GRID -->
+  <div style="display: grid; grid-template-columns: 1fr 320px; gap: 16px;">
+
+    <!-- LEFT COLUMN -->
+    <div>
+
+      <!-- YOUR TOP 3 THIS WEEK -->
+      <div class="card">
+        <div class="section-title">🎯 Your Top 3 This Week</div>
+        <div id="topActions"></div>
+      </div>
+
+      <!-- WEEKLY DIGEST / COMPARISON -->
+      <div class="card" style="margin-top: 16px;">
+        <div class="section-title">📈 Weekly Digest</div>
+        <div id="weeklyDigest"></div>
+      </div>
+
+      <!-- RECENTLY READ ARTICLES -->
+      <div class="card" style="margin-top: 16px;">
+        <div class="section-title">📚 Recently Read</div>
+        <div id="recentArticles"></div>
+      </div>
+
+      <!-- UPCOMING DEADLINES -->
+      <div class="card" style="margin-top: 16px;">
+        <div class="section-title">⏰ Urgent Deadlines</div>
+        <div id="deadlines"></div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT SIDEBAR -->
+    <div>
+
+      <!-- SKILL FOCUS THIS WEEK -->
+      <div class="card">
+        <div class="section-title">🧠 Skill Focus</div>
+        <div id="skillFocus"></div>
+      </div>
+
+      <!-- DAILY HISTORY -->
+      <div class="card" style="margin-top: 16px;">
+        <div class="section-title">📅 This Week</div>
+        <div id="dailyHistory"></div>
+        <button class="btn primary" onclick="logToday()" style="width: 100%; margin-top: 12px;">💾 Log Today</button>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js"></script>
+<script>
+let DATA = null;
+let readState = {};
+
+try { const s = localStorage.getItem("trackerReadState"); if(s) readState = JSON.parse(s); } catch(e){}
+
+async function loadData() {
+  try {
+    const response = await fetch('data.json?' + Date.now());
+    DATA = await response.json();
+    render();
+  } catch (err) {
+    console.error('Error loading data:', err);
+  }
+}
+
+function render() {
+  if (!DATA) return;
+  
+  const today = new Date().toISOString().split('T')[0];
+  const snapshots = DATA.snapshots || [];
+  const weekSnapshots = snapshots.filter(s => {
+    const d = new Date(s.date);
+    const now = new Date();
+    const weekAgo = new Date(now.getTime() - 7*24*60*60*1000);
+    return d >= weekAgo && d <= now;
+  }).reverse();
+
+  // METRICS
+  const weekRead = weekSnapshots.reduce((sum, s) => sum + s.read, 0);
+  const weekTotal = weekSnapshots.reduce((sum, s) => sum + s.total, 0);
+  const weekPercent = weekTotal > 0 ? Math.round((weekRead / weekTotal) * 100) : 0;
+  const weekAvg = weekSnapshots.length > 0 ? Math.round(weekSnapshots.reduce((sum, s) => sum + s.completionPercent, 0) / weekSnapshots.length) : 0;
+  const streak = calculateStreak(snapshots);
+
+  document.getElementById('lastSync').textContent = `Last synced: ${today}`;
+  document.getElementById('weekRead').textContent = weekRead;
+  document.getElementById('weekProgress').style.width = weekPercent + '%';
+  document.getElementById('weekGoal').textContent = `Goal: ${weekRead}/3 — ${weekPercent}%`;
+  document.getElementById('streak').textContent = streak;
+  document.getElementById('completion').textContent = weekAvg + '%';
+  document.getElementById('weekAvg').textContent = `Avg: ${weekAvg}% | Last week: ${snapshots[7]?.completionPercent || 0}%`;
+
+  // TOP 3 ACTIONS
+  const actions = (DATA.actionItems || []).filter(a => !a.done).slice(0, 3);
+  document.getElementById('topActions').innerHTML = actions.length ? actions.map((a, i) => `
+    <div class="priority-item">
+      <div class="priority-num">${i+1}</div>
+      <div class="priority-content">
+        <div class="priority-title">${a.title}</div>
+        <div class="priority-meta"><span class="badge ${a.tag === 'DEADLINE' ? 'deadline' : 'action'}">${a.tag}</span> ${a.deadlineLabel}</div>
+      </div>
+    </div>
+  `).join('') : '<div class="empty">All caught up! 🎉</div>';
+
+  // WEEKLY DIGEST
+  const lastWeek = snapshots[7]?.completionPercent || weekAvg;
+  const change = weekAvg - lastWeek;
+  document.getElementById('weeklyDigest').innerHTML = `
+    <div class="digest-stat">
+      <span class="digest-label">Articles read</span>
+      <span class="digest-value">${weekRead} <span class="digest-change ${change >= 0 ? '' : 'down'}">${change >= 0 ? '↑' : '↓'} ${Math.abs(change)}%</span></span>
+    </div>
+    <div class="digest-stat">
+      <span class="digest-label">Actions completed</span>
+      <span class="digest-value">${weekSnapshots.reduce((sum, s) => sum + s.actionsDone, 0)}</span>
+    </div>
+    <div class="digest-stat">
+      <span class="digest-label">Days active</span>
+      <span class="digest-value">${weekSnapshots.length}/7</span>
+    </div>
+    <div class="digest-stat">
+      <span class="digest-label">Top skill</span>
+      <span class="digest-value">${getTopSkill()}</span>
+    </div>
+  `;
+
+  // RECENTLY READ
+  const articles = (DATA.articles || []).filter(a => readState[a.title]);
+  document.getElementById('recentArticles').innerHTML = articles.length ? articles.slice(0, 4).map(a => `
+    <div class="recent-read">
+      <div class="read-title">✓ ${a.title.substring(0, 50)}...</div>
+      <div class="read-meta">${a.skillArea}</div>
+    </div>
+  `).join('') : '<div class="empty">Start reading to see progress</div>';
+
+  // URGENT DEADLINES
+  const deadlines = (DATA.actionItems || []).filter(a => a.deadline && !a.done).sort((a, b) => a.deadline.localeCompare(b.deadline)).slice(0, 3);
+  document.getElementById('deadlines').innerHTML = deadlines.length ? deadlines.map(a => `
+    <div class="deadline-warning">⚠️ ${a.title} — ${a.deadlineLabel}</div>
+  `).join('') : '<div class="empty">No urgent deadlines</div>';
+
+  // SKILL FOCUS
+  const skillCounts = {};
+  (DATA.articles || []).forEach(a => { skillCounts[a.skillArea] = (skillCounts[a.skillArea]||0) + 1; });
+  const maxSkill = Math.max(...Object.values(skillCounts), 1);
+  document.getElementById('skillFocus').innerHTML = Object.entries(skillCounts)
+    .sort((a,b)=>b[1]-a[1])
+    .slice(0, 4)
+    .map(([k,v]) => `
+      <div class="skill-item">
+        <div class="skill-name">${k}</div>
+        <div class="skill-bar-wrap"><div class="skill-bar" style="width:${Math.round(v/maxSkill*100)}%"></div></div>
+        <div class="skill-count">${v}</div>
+      </div>
+    `).join('');
+
+  // DAILY HISTORY
+  document.getElementById('dailyHistory').innerHTML = weekSnapshots.slice(0, 7).map(s => `
+    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f5f5f5; font-size: 11px;">
+      <span>${new Date(s.date).toLocaleDateString('en-US', {weekday: 'short'})}</span>
+      <span style="font-weight: 600;">${s.read}/${s.total} <span style="color: #999;">(${s.completionPercent}%)</span></span>
+    </div>
+  `).join('');
+}
+
+function calculateStreak(snapshots) {
+  let count = 0;
+  const today = new Date();
+  for (let i = 0; i < snapshots.length; i++) {
+    const d = new Date(snapshots[i].date);
+    const expectedDate = new Date(today.getTime() - (i * 24*60*60*1000));
+    if (d.toDateString() !== expectedDate.toDateString()) break;
+    count++;
+  }
+  return count;
+}
+
+function getTopSkill() {
+  const skillCounts = {};
+  (DATA.articles || []).forEach(a => { skillCounts[a.skillArea] = (skillCounts[a.skillArea]||0) + 1; });
+  return Object.entries(skillCounts).sort((a,b)=>b[1]-a[1])[0]?.[0] || '—';
+}
+
+function logToday() {
+  const articles = (DATA.articles || []);
+  const read = articles.filter(a => readState[a.title]).length;
+  const today = new Date().toISOString().split('T')[0];
+  
+  const snapshot = {
+    date: today,
+    total: articles.length,
+    read: read,
+    unread: articles.length - read,
+    completionPercent: articles.length > 0 ? Math.round((read / articles.length) * 100) : 0,
+    mustReadCount: articles.filter(a => a.rating === 'MUST READ').length,
+    actionsDone: 2
+  };
+  
+  alert(`✅ Logged for ${today}\n${read}/${articles.length} articles\n${snapshot.completionPercent}%\n\nShare this data format with your scheduled task!`);
+}
+
+loadData();
+setInterval(() => { fetch('data.json?' + Date.now()).then(r => r.json()).then(d => { DATA = d; render(); }); }, 5*60*1000);
+</script>
+</body>
+</html>
